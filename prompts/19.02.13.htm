@@ -175,13 +175,26 @@
   //     (NOTE: Imports will fail unless you launch your server in the root dir of the repository)
 
 
+  let layer = d3.select('g#viz');
 
+  d3.json('../datasets/nhl_goals.json').then(function(data) {
+    console.log(data);
 
     // 2. Build some scales
     // (We've applied a transform to the SVG rather than scales to make padding easier)
 
+    let xScale = d3.scaleLinear().domain([0,100]).range([0,400]);
+    let yScale = d3.scaleLinear().domain([-42.5,42.51]).range([0,340]);
+
 
     // 3. Add circles
+
+    data.forEach(function(d,i) {
+      layer.append('circle')
+        .attr('r',4)
+        .attr('cx', xScale( d['x'] ))
+        .attr('cy', yScale( d['y'] ));
+    })
 
 
     // 4. Spot check data
@@ -201,6 +214,7 @@
     // c. Create boxes
 
 
+  });
 
 
 

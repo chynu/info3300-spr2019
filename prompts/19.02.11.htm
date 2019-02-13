@@ -103,6 +103,14 @@
         .style('stroke-width', 10);
   });
 
+  // Labels
+  passengers.forEach(function(d,i) {
+    svg.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('x', ageScale(d['age']))
+      .attr('y', height/2 + 10);
+  });
+
 
   // Build some scales
 
