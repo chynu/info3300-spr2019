@@ -56,20 +56,59 @@
   <script id="notes">
 
   // 1. How can we select elements? What is the difference between select() and selectAll()?
+  let d3div1 = d3.select('#d1');
 
+  d3div1.text("hullo");
+  d3div1.style("color", "deepskyblue");
 
 
   // 2. How can we create new elements, and set their attributes and styles?
 
-
+  let svg = d3.select('svg');
+  svg.append('circle')
+      .attr('r', 20)
+      .attr('cx', 70)
+      .attr('cy', 70)
+      .attr('fill', '#E3EB5B')
+      .attr('class', 'circle1');
 
   // 3. How do we create lots of elements (but not using data just yet)?
 
+  function randomPixel() {
+    return Math.random() * svg.attr('height');
+  }
 
+  let toggle = false;
+  const N = 40;
+
+  for (let i = 0; i < N; i++) {
+    svg.append('circle')
+        .attr('r', 3)
+        .attr('cx', randomPixel())
+        .attr('cy', randomPixel())
+        .attr('fill', 'purple')
+        .attr('class', 'smallcircle');
+  }
+
+  d3.select('.circle1').on('click', function() {
+    if (toggle) {
+      this.setAttribute('fill', '#E3EB5B');
+      d3.selectAll('.smallcircle')
+          .transition().duration(500)
+          .attr('fill', 'purple');
+    } else {
+      this.setAttribute('fill', 'red');
+      d3.selectAll('.smallcircle')
+          .transition().duration(500)
+          .attr('fill', 'blue');
+    }
+    toggle = !toggle;
+  });
 
   // 4. How do we update the attributes of existing elements?
 
-
+  // d3.selectAll('circle')
+  //       .transition().delay(1000).duration(500).style('fill', 'pink');
 
 
   </script>

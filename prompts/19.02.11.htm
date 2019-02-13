@@ -66,6 +66,43 @@
 
   // 1. Let's make a doubled histogram of all passengers on the Titanic
 
+  let svg = d3.select('svg#all');
+  let width = svg.attr('width');
+  let height = svg.attr('height');
+  console.log(width);
+
+  let ageScale = d3.scaleLinear()
+          .domain([0,80])
+          .range([10, width-10]);
+
+  let livedScale = d3.scaleLinear()
+          .domain([0,200])
+          .range([10,height/2]);
+
+  passengers.forEach(function(d,i) {
+    svg.append('line')
+        .attr('x1', ageScale(d['age']))
+        .attr('x2', ageScale(d['age']))
+        .attr('y1', height/2)
+        .attr('y2', height/2 - livedScale(d['lived']))
+        .style('stroke', '#5555f0')
+        .style('stroke-width', 10);
+  });
+
+  let diedScale = d3.scaleLinear()
+          .domain([0, 200])
+          .range([0, height/2-10]);
+
+  passengers.forEach(function(d,i) {
+    svg.append('line')
+        .attr('x1', ageScale(d['age']))
+        .attr('x2', ageScale(d['age']))
+        .attr('y1', height/2)
+        .attr('y2', height/2 + diedScale(d['lived']))
+        .style('stroke', '#f05555')
+        .style('stroke-width', 10);
+  });
+
 
   // Build some scales
 
