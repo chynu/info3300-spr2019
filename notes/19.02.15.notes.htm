@@ -21,44 +21,34 @@
   <div class="container larger">
   <h3>Prompt for February 15</h3>
   <p>
-    Project 1 has started up! Log in there to find your teammates and project instructions.
+    Project 1 has started up! Log in there to find your teammates and project instructions. <br/>
+    We'll have mentors out later today. Don't forget about milestone 1 tonight.
   </p>
   <p>
     Check out <a href="https://mimno.github.io/showcase/#p1">Professor Mimno's project showcase</a>. The project this year is similar enough to Prof. Mimno's from past years that these examples ought to be useful.
   </p>
   <p>
-    <a href="https://www.kaggle.com/martinellis/nhl-game-data#game_plays.csv">Source</a> for our first dataset today. Our second dataset is sourced from Gapminder. We'll do a spinoff on one of <a href="https://youtu.be/jbkSRLYSojo">Hans Rosling's famous data presentations</a>.
+    Mike Bostock has a <a href="https://bl.ocks.org/mbostock/3019563">handy page discussing chart margins</a>.
   </p>
   <p>
-    I made a <a href="https://jsfiddle.net/03adec6x/">JSFiddle</a> if you want to play with color scales and interpolation.
+    Learn more about <a href="https://github.com/d3/d3-shape#curveLinear">d3 line smoothing choices</a>.
   </p>
 
   <h5>HTML for today:</h5>
 
 
-  <!--- For our first dataset >>> Each pixel is 0.25 feet --->
-  <svg id="hockey" height="350" width="430" style="margin-top:20px" >
-
-    <g id="rink" transform="translate(20,5)">
-      <line x1="1" x2="1" y1="2" y2="340" style="opacity:0.7;stroke:#aa1111;stroke-width:3;stroke-linecap:round;stroke-dasharray:5,5;"/>
-      <line x1="100" x2="100" y1="0" y2="340" style="opacity:0.7;stroke:#224499;stroke-width:6;"/>
-      <line x1="356" x2="356" y1="2" y2="338" style="opacity:0.7;stroke:#aa1111;stroke-width:3;"/>
-      <path d="M356,158 L338,158 a24,24 1 0,0 0,24 L356,182" style="opacity:0.7;fill:#cc3333;stroke:#aa1111;stroke-width:3;"/>
-      <rect x="-400" y="0" width="800" height="340" rx="56" ry="56" style="fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke:#000;"/>
-    </g>
-
-    <g id="viz" transform="translate(20,5)" >
-    </g>
-
-  </svg>
-  <div id="simpleLegend" class="legend"> </div>
-
-
   <svg id="scatterplot" height="400" width="400" style="background: #eee; margin-top:50px" >
 
   </svg>
-  <div id="anotherSimpleLegend" class="legend"> </div>
+  <div id="simpleLegend" class="legend"> </div>
+  <br/>
+  <svg id="joindemo" height="300" width="300" style="background: #759bc5; margin-top:50px" >
 
+  </svg>
+  <br/>
+  <svg id="linechart" height="400" width="400" style="background: #eee; margin-top:50px" >
+
+  </svg>
 
 
 
@@ -78,124 +68,20 @@
   <script id="notes1">
 
 
-  let layer = d3.select("g#viz");
-
-
-  // NOTE: We're now importing the raw form of Wednesday's dataset
-
-  //  It has some issues that I cleaned up before class started
-  d3.json("../datasets/nhl_goals_raw.json").then( function(data) {
-
-  // NOTE: We're now importing the raw form of Wednesday's dataset
-
-    // (from 4) We'll put our spot check fixes here, before we draw anything
-
-
-
-
-    // 2. Build some scales
-    let xScale = d3.scaleLinear().domain([0,100]).range([0,400]);
-    let yScale = d3.scaleLinear().domain([-42.5,42.5]).range([0,340]);
-    let colorScale = d3.scaleOrdinal(d3.schemeCategory10); // This builds its range as data come in
-
-    // 3. Add circles
-    data.forEach(function(d,i) {
-      layer.append("circle")
-            .attr("r",4)
-            .attr("cx", xScale( d['x'] ))
-            .attr("cy", yScale( d['y'] ))
-            .style("fill",colorScale( d['secondaryType'] ))
-            .attr("opacity",0.2)
-            .attr("label",d['secondaryType']);
-    });
-
-
-    // 4. Spot check data
-    // What kinds of things could go wrong?
-
-    // Now is a good time to introduce catching of promises
-    // Let's write some disastrous code!
-
-
-
-
-
-
-    // 5. Make a simple legend with mouseovers
-    colorScale.domain().forEach(function(d,i) {
-      d3.select("#simpleLegend")
-        .append("span").text(d)
-        .style("color", colorScale(d))
-        .on("mouseover", function() {
-          d3.selectAll("circle").each(function() {
-            let circle = d3.select(this);
-            if (circle.attr("label") === d) {
-              circle.attr("opacity", 0.1);
-            }
-            else {
-              circle.attr("opacity", 0.01);
-            }
-          })
-        })
-    })
-
-
-    // --- End of class on 02/13
-
-
-
-    // 6. Let's make a heatmap
-    //   ( remember to comment out the circles code to speed things up )
-    // a. Bin points
-
-
-    // b. Construct scales
-
-
-    // c. Draw boxes
-
-
-
-    // Use our own colors!
-
-
-    // Still looks messy -- how do we constrain it to the rink outline?
-
-
-  })
-
-
-
-  // Helper function for heatmap
-  function createBuckets(data, xGet, yGet, xDomain, yDomain, bucketSize) {
-    let buckets = [];  // Create empty buckets
-    for (let x = xDomain[0]; x < xDomain[1]; x=x+bucketSize) {
-      let bucket = [];
-      for (let y = yDomain[0]; y < yDomain[1]; y=y+bucketSize) {
-        bucket.push(0);
-      }
-      buckets.push(bucket);
-    }
-    for (let i = 0; i < data.length; i++) {  // Populate buckets
-      let x = Math.floor((xGet(data[i]) - xDomain[0]) / bucketSize);
-      let y = Math.floor((yGet(data[i]) - yDomain[0]) / bucketSize);
-      buckets[x][y]++;
-    }
-    return buckets;
-  }
-  </script>
-
-
-
-
-
-  <script id="notes2">
-
   // Let's make a plain old scatterplot
 
   // 0. Find our SVG and get that ready
   //     We're going to use a new way of padding that makes axes easier
+  let svg = d3.select("svg#scatterplot");
+  let width = svg.attr("width");
+  let height = svg.attr("height");
+  // This is a clever way to do padding that is more adjustable when you are designing
+  let margin = { "top": 10, "right": 10, "bottom": 50, "left":50};
+  let chartWidth = width - margin["left"] - margin.right; // If you know the key is fixed text, you can access it with . instead of [""]
+  let chartHeight = height - margin["top"] - margin.bottom;
 
+  let scatter = svg.append("g") // We make a subgroup to contain the points we are adding, and use the margins to shrink it and move it to the right place, so that it doesn't overlap our axes
+        .attr("transform","translate("+margin.left+","+margin.top+")");
 
 
   // 1. Import some CSV data
@@ -204,18 +90,59 @@
     // Useful fields:  "Life Expectancy"  "GDP/Person (PPP$)"   "Total Population"
 
     // 2. Check for data issues
+    console.log(data);
+
+    // What we find here are that most of the attributes are imported as strings rather than numbers. Let's cast them.
+    data.forEach( (d, i) => {
+      d['life'] = Number(d['Life Expectancy']);
+      d['gdp'] = Number(d['GDP/Person (PPP$)']);
+      // d['Total Population'] = Number(d['Total Population']); // This will pump out NaNs. Why?
+      d['pop'] = Number(d['Total Population'].replace(/,/g,"")); // Fix with replace for commas -- /,/g is a regex for commas
+    });
 
 
 
     // 3. Let's build some scales
+    const gdpMin = d3.min(data, d => d['gdp']);
+    const gdpMax = d3.max(data, d => d['gdp']);
+    const gdpScale = d3.scaleLinear().domain([gdpMin+1, gdpMax]).range([0, chartWidth]);
 
+    const lifeMin = d3.min(data, d => d['life']);
+    const lifeMax = d3.max(data, d => d['life']);
+    const lifeScale = d3.scaleLinear().domain([lifeMin, lifeMax])
+            .range([chartHeight, 0]);
+
+    const popMin = d3.min(data, d => d['pop']);
+    const popMax = d3.max(data, d => d['pop']);
+    const popScale = d3.scaleLinear().domain([popMin, popMax]).range([5,10]); // circle size
+
+    const regionScale = d3.scaleOrdinal(d3.schemeCategory10); // don't need to define domain
 
 
     // 4. Make some axes before we plot the circles
+    // Y axis
+    let leftAxis = d3.axisLeft(lifeScale);
+    svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform","translate("+(margin.left-10)+","+margin.top+")") // -10 to keep it away from chart area
+      .call(leftAxis);
 
+    // X axis
+    let bottomAxis = d3.axisBottom(gdpScale)
+    let element = svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform","translate("+margin.left+","+(chartHeight + margin.top+10)+")") // +10 to keep away from chart area
+    bottomAxis(element); // This is what .call is doing, just less elegantly
+
+    // If you want the axes to "touch" at 0,0, then remove the +- 10 from the translation
+    //  but this risks occluding points
+
+    // --- End of class, left as exercise until Monday
 
 
     // 5. Start plotting circles and see what happens
+
+    // Some things will look weird here, so we might have to adjust scales and check for more bad values...
 
 
 
@@ -224,8 +151,20 @@
 
 
     // 7. Let's also now add a way to get all circles back after using the legend
+    //    hint: try out the .on("mouseout") event for the legend element to find when the mouse leaves that area
 
 
+
+
+
+
+  </script>
+
+
+
+
+
+  <script id="notes2">
 
 
   });
